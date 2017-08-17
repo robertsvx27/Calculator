@@ -54,6 +54,7 @@ function add(e) {
                     operation += addigit.textContent;
                 }                       
                 addigit.textContent = "";
+                operation = validate(operation);
                 operation += getCharacter(value);
                 lastoperator = getCharacter(value);
             } else {
