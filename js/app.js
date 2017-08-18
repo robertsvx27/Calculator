@@ -1,14 +1,18 @@
+
 var keys = document.querySelectorAll('img');
 var addigit = document.getElementById('display');
 var operators = ['+', '-', '*', '/'];
 var operation = "";
 var lastoperator = "";
+var lastdigit = 0;
+var countequal = 0;
 //addigit.textContent = "0";
 
 for (var i = 0; i < keys.length; i++) {
-
-    keys[i].addEventListener("onmousedown", reduce);
-    keys[i].addEventListener("onmouseup", enlarge);
+    // keys[i].addEventListener("onmousedown", reduce);
+    // keys[i].addEventListener("onmouseup", enlarge);
+    keys[i].onmousedown = reduce;
+    keys[i].onmouseup = enlarge;
     keys[i].addEventListener("click", add);
 }
 function add(e) {
@@ -19,40 +23,49 @@ function add(e) {
             addigit.textContent = "0";
             operation = "";
             lastoperator = "";
+            countequal = 0;
             break
         case "igual":
-            if (lastoperator != "" && !isNaN(operation)) {
+            countequal += 1;
+            if (countequal > 1) {
                 operation = validate(operation);
-                operation += lastoperator + operation;
+                operation += lastoperator + "(" + lastdigit + ")";
+                console.log("Eval: " + operation);
                 addigit.textContent = eval(operation);
                 addigit.textContent = formatNum(addigit.textContent);
                 operation = addigit.textContent;
             } else {
-                operation += addigit.textContent;
+                lastdigit = "(" + addigit.textContent + ")";
+                //operation += addigit.textContent;
+                operation += lastdigit;
                 operation = validate(operation);
+                console.log("Eval: " + operation);
                 addigit.textContent = eval(operation);
                 addigit.textContent = formatNum(addigit.textContent);
                 operation = addigit.textContent;
             }
             break
         case "punto":
-            if (addigit.textContent.indexOf(".")==-1){
+            if (addigit.textContent.indexOf(".") == -1) {
                 addigit.textContent += getCharacter(value);
-            }            
+            }
             break
         case "raiz":
             addigit.textContent = validate(addigit.textContent);
-            if (addigit.textContent)
+            if (addigit.textContent) {
                 addigit.textContent = eval(getCharacter(value) + addigit.textContent + ")");
+                addigit.textContent = formatNum(addigit.textContent);
+            }
             break
         case "signo":
             addigit.textContent = validateSigno(addigit.textContent);
+
             break
         default:
-            if (operators.indexOf(getCharacter(value)) > -1) {         
-                if (operation!=addigit.textContent){
+            if (operators.indexOf(getCharacter(value)) > -1) {
+                if (operation != addigit.textContent) {
                     operation += addigit.textContent;
-                }                       
+                }
                 addigit.textContent = "";
                 operation = validate(operation);
                 operation += getCharacter(value);
@@ -71,11 +84,16 @@ function add(e) {
                         }
                         break
                 }
-
+                lastdigit = addigit.textContent;
             }
+            countequal = 0;
             break
     }
-    //addigit.textContent=formatNum(addigit.textContent);   
+    //addigit.textContent=formatNum(addigit.textContent);  
+    console.log("O: " + operation);
+    console.log("UN:" + lastdigit);
+    console.log("UO: " + lastoperator);
+    console.log("---------------");
 }
 
 function reduce(e) {
